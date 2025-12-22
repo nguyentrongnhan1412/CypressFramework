@@ -1,11 +1,13 @@
 const LoginPage = require('../support/pages/LoginPage');
 const ProfilePage = require('../support/pages/ProfilePage');
 const BookDeletedPopup = require('../support/pages/BookDeletedPopup');
+const ApiClient = require('../core/api/apiClient');
 
 describe('Scenario 3: Delete book successfully', () => {
   let loginPage;
   let profilePage;
   let bookDeletedPopup;
+  let api;
   let credentials;
   let bookData;
   const bookTitle = 'Git Pocket Guide';
@@ -24,48 +26,33 @@ describe('Scenario 3: Delete book successfully', () => {
     loginPage = new LoginPage();
     profilePage = new ProfilePage();
     bookDeletedPopup = new BookDeletedPopup();
+    api = new ApiClient('https://demoqa.com');
   });
 
   it('should delete book successfully and verify it is removed', () => {
-    let authToken;
-    cy.request({
-      method: 'POST',
-      url: 'https://demoqa.com/Account/v1/GenerateToken',
-      body: {
-        userName: credentials.username,
-        password: credentials.password
-      }
+    // Generate token
+    api.post('/Account/v1/GenerateToken', {
+      userName: credentials.username,
+      password: credentials.password
     }).then((response) => {
       expect(response.status).to.eq(200);
-      authToken = response.body.token;
-      expect(authToken).to.exist;
+      const token = response.body.token;
+      expect(token).to.exist;
 
-      return cy.request({
-        method: 'DELETE',
-        url: 'https://demoqa.com/BookStore/v1/Books',
-        headers: {
-          'Authorization': `Bearer ${authToken}`
-        },
-        body: {
-          userId: credentials.userId
-        },
+      // Set auth token for subsequent requests
+      api.setAuthToken(token);
+
+      // Delete all books
+      return api.delete('/BookStore/v1/Books', {
+        body: { userId: credentials.userId },
         failOnStatusCode: false
       });
     }).then(() => {
-      return cy.request({
-        method: 'POST',
-        url: 'https://demoqa.com/BookStore/v1/Books',
-        headers: {
-          'Authorization': `Bearer ${authToken}`
-        },
-        body: {
-          userId: credentials.userId,
-          collectionOfIsbns: [
-            {
-              isbn: bookData.isbn
-            }
-          ]
-        },
+      // Add the test book
+      return api.post('/BookStore/v1/Books', {
+        userId: credentials.userId,
+        collectionOfIsbns: [{ isbn: bookData.isbn }]
+      }, {
         failOnStatusCode: false
       });
     }).then((addResponse) => {
