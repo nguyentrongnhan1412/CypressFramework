@@ -28,63 +28,59 @@ describe('Scenario 3: Delete book successfully', () => {
 
   it('should delete book successfully and verify it is removed', () => {
     let authToken;
-    let alertText = '';
+    cy.request({
+      method: 'POST',
+      url: 'https://demoqa.com/Account/v1/GenerateToken',
+      body: {
+        userName: credentials.username,
+        password: credentials.password
+      }
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      authToken = response.body.token;
+      expect(authToken).to.exist;
 
-    cy.then(() => {
-      cy.request({
-        method: 'POST',
-        url: 'https://demoqa.com/Account/v1/GenerateToken',
+      return cy.request({
+        method: 'DELETE',
+        url: 'https://demoqa.com/BookStore/v1/Books',
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        },
         body: {
-          userName: credentials.username,
-          password: credentials.password
-        }
-      }).then((response) => {
-        expect(response.status).to.eq(200);
-        authToken = response.body.token;
-        expect(authToken).to.exist;
-
-        return cy.request({
-          method: 'DELETE',
-          url: 'https://demoqa.com/BookStore/v1/Books',
-          headers: {
-            'Authorization': `Bearer ${authToken}`
-          },
-          body: {
-            userId: credentials.userId
-          },
-          failOnStatusCode: false
-        });
-      }).then((deleteResponse) => {
-        return cy.request({
-          method: 'POST',
-          url: 'https://demoqa.com/BookStore/v1/Books',
-          headers: {
-            'Authorization': `Bearer ${authToken}`
-          },
-          body: {
-            userId: credentials.userId,
-            collectionOfIsbns: [
-              {
-                isbn: bookData.isbn
-              }
-            ]
-          },
-          failOnStatusCode: false
-        });
-      }).then((addResponse) => {
-        expect(addResponse.status).to.be.oneOf([201, 400]);
-        if (addResponse.status === 400) {
-          expect(addResponse.body.message).to.include("ISBN already present");
-        }
+          userId: credentials.userId
+        },
+        failOnStatusCode: false
       });
-    });
-
-    cy.on('window:alert', (text) => {
-      alertText = text;
-      return true;
+    }).then(() => {
+      return cy.request({
+        method: 'POST',
+        url: 'https://demoqa.com/BookStore/v1/Books',
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        },
+        body: {
+          userId: credentials.userId,
+          collectionOfIsbns: [
+            {
+              isbn: bookData.isbn
+            }
+          ]
+        },
+        failOnStatusCode: false
+      });
+    }).then((addResponse) => {
+      expect(addResponse.status).to.be.oneOf([201, 400]);
+      if (addResponse.status === 400) {
+        expect(addResponse.body.message).to.include("ISBN already present");
+      }
     });
 
     loginPage.navigate();
+    
+    cy.window().then((win) => {
+      cy.stub(win, 'alert').as('alertStub');
+    });
+
     loginPage.login(credentials.username, credentials.password);
     
     profilePage.waitForPageToLoad();
@@ -98,11 +94,7 @@ describe('Scenario 3: Delete book successfully', () => {
     
     profilePage.confirmAction();
 
-    cy.wait(2000);
-
-    cy.then(() => {
-      expect(alertText).to.equal('Book deleted.');
-    });
+    cy.get('@alertStub').should('have.been.calledWith', 'Book deleted.');
 
     profilePage.verifyBookIsNotDisplayed(bookTitle);
   });

@@ -77,7 +77,7 @@ class PracticeFormPage {
     fillSubjects(subjects) {
         subjects.forEach(subject => {
             this.subjectsInput.typeText(subject);
-            cy.wait(500);
+            cy.get('.subjects-auto-complete__menu').should('be.visible');
             this.subjectsInput.typeText('{enter}');
         });
     }

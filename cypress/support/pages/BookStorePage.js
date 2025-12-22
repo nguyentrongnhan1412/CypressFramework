@@ -24,13 +24,10 @@ class BookStorePage {
 
     searchBooks(searchText) {
         this.searchBox.enterText(searchText);
-        
-        cy.wait(1000);
     }
 
     clearSearch() {
         this.searchBox.enterText('{selectall}{backspace}');
-        cy.wait(500);
     }
 
     getVisibleBookTitles() {
@@ -143,7 +140,6 @@ class BookStorePage {
 
     selectRowsPerPage(rowCount) {
         this.rowsSelectDropdown.selectOptionFromElement(rowCount);
-        cy.wait(500);
     }
 }
 

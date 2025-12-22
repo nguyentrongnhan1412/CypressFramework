@@ -21,8 +21,6 @@
     "mochawesome-report-generator": "^6.2.0"
   },
   "dependencies": {
-    "@faker-js/faker": "^10.1.0",
-    "axios": "^1.13.2",
-    "crypto-js": "^4.2.0"
+    "@faker-js/faker": "^10.1.0"
   }
 }

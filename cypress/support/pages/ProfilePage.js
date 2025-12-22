@@ -26,7 +26,7 @@ class ProfilePage {
 
     waitForPageToLoad() {
         cy.get('body').should('be.visible');
-        cy.wait(1000);
+        this.userNameValue.waitForElementToBeVisible();
     }
 
     getUsername() {
@@ -43,13 +43,10 @@ class ProfilePage {
 
     searchBooks(searchText) {
         this.searchBox.enterText(searchText);
-        
-        cy.wait(1000);
     }
 
     clearSearch() {
         this.searchBox.enterText('{selectall}{backspace}');
-        cy.wait(500);
     }
 
     getBookTitles() {

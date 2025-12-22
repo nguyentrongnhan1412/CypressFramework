@@ -40,8 +40,6 @@ class LoginPage {
         this.fillUsername(username);
         this.fillPassword(password);
         this.clickLogin();
-        
-        cy.wait(2000);
     }
 
     loginWithCredentials(credentials) {
