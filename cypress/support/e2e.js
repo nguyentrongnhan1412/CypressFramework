@@ -1,25 +1,7 @@
-// ***********************************************************
-// This example support/e2e.js is processed and
-// loaded automatically before your test files.
-//
-// This is a great place to put global configuration and
-// behavior that modifies Cypress.
-//
-// You can change the location of this file or turn off
-// automatically serving support files with the
-// 'supportFile' configuration option.
-//
-// You can read more here:
-// https://on.cypress.io/configuration
-// ***********************************************************
-
-// Import commands.js using ES2015 syntax:
 import './commands';
 
-// Import mochawesome reporter
 import 'cypress-mochawesome-reporter/register';
 
-// Hide fetch/XHR requests from command log
 const app = window.top;
 if (!app.document.head.querySelector('[data-hide-command-log-request]')) {
   const style = app.document.createElement('style');
@@ -29,9 +11,7 @@ if (!app.document.head.querySelector('[data-hide-command-log-request]')) {
   app.document.head.appendChild(style);
 }
 
-// Block ads and tracking scripts to prevent browser crashes
 beforeEach(() => {
-  // Intercept and block ad/tracking domains
   const blockedDomains = [
     '*doubleclick.net*',
     '*googlesyndication.com*',
@@ -61,10 +41,7 @@ beforeEach(() => {
   });
 });
 
-// Handle uncaught exceptions
 Cypress.on('uncaught:exception', (err, runnable) => {
-  // Returning false here prevents Cypress from failing the test
-  // Handle common cross-origin script errors and other known issues
   if (
     err.message.includes('ResizeObserver loop limit exceeded') ||
     err.message.includes('Script error') ||
@@ -85,7 +62,6 @@ Cypress.on('uncaught:exception', (err, runnable) => {
   ) {
     return false;
   }
-  // Check if error is from ad-related domains
   if (err.stack && (
     err.stack.includes('ad.plus') ||
     err.stack.includes('doubleclick') ||
@@ -96,7 +72,6 @@ Cypress.on('uncaught:exception', (err, runnable) => {
   )) {
     return false;
   }
-  // Also check for cross-origin script errors by checking if error has no stack trace
   if (!err.stack && err.message === 'Script error.') {
     return false;
   }

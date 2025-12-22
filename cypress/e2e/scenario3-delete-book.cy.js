@@ -30,7 +30,6 @@ describe('Scenario 3: Delete book successfully', () => {
   });
 
   it('should delete book successfully and verify it is removed', () => {
-    // Generate token
     api.post('/Account/v1/GenerateToken', {
       userName: credentials.username,
       password: credentials.password
@@ -39,16 +38,13 @@ describe('Scenario 3: Delete book successfully', () => {
       const token = response.body.token;
       expect(token).to.exist;
 
-      // Set auth token for subsequent requests
       api.setAuthToken(token);
 
-      // Delete all books
       return api.delete('/BookStore/v1/Books', {
         body: { userId: credentials.userId },
         failOnStatusCode: false
       });
     }).then(() => {
-      // Add the test book
       return api.post('/BookStore/v1/Books', {
         userId: credentials.userId,
         collectionOfIsbns: [{ isbn: bookData.isbn }]

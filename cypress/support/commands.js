@@ -1,16 +1,5 @@
-// ***********************************************
-// Custom Commands
-// ***********************************************
-
-// Import cypress-xpath for XPath support
 require('cypress-xpath');
 
-/**
- * Custom command to generate token
- * @param {string} username - Username
- * @param {string} password - Password
- * @returns {Cypress.Chainable<string>} - Authentication token
- */
 Cypress.Commands.add('generateToken', (username, password) => {
   return cy.request({
     method: 'POST',
@@ -26,12 +15,6 @@ Cypress.Commands.add('generateToken', (username, password) => {
   });
 });
 
-/**
- * Custom command to login via API
- * @param {string} username - Username
- * @param {string} password - Password
- * @returns {Cypress.Chainable} - User data including userId and token
- */
 Cypress.Commands.add('loginViaApi', (username, password) => {
   return cy.request({
     method: 'POST',
@@ -51,13 +34,6 @@ Cypress.Commands.add('loginViaApi', (username, password) => {
   });
 });
 
-/**
- * Custom command to add book via API
- * @param {string} userId - User ID
- * @param {string} token - Authentication token
- * @param {string} isbn - Book ISBN
- * @returns {Cypress.Chainable} - Response data
- */
 Cypress.Commands.add('addBookViaApi', (userId, token, isbn) => {
   return cy.request({
     method: 'POST',
@@ -83,13 +59,6 @@ Cypress.Commands.add('addBookViaApi', (userId, token, isbn) => {
   });
 });
 
-/**
- * Custom command to delete book via API
- * @param {string} userId - User ID
- * @param {string} token - Authentication token
- * @param {string} isbn - Book ISBN
- * @returns {Cypress.Chainable} - Response data
- */
 Cypress.Commands.add('deleteBookViaApi', (userId, token, isbn) => {
   return cy.request({
     method: 'DELETE',
@@ -111,12 +80,6 @@ Cypress.Commands.add('deleteBookViaApi', (userId, token, isbn) => {
   });
 });
 
-/**
- * Custom command to delete all books via API
- * @param {string} userId - User ID
- * @param {string} token - Authentication token
- * @returns {Cypress.Chainable} - Response data
- */
 Cypress.Commands.add('deleteAllBooksViaApi', (userId, token) => {
   return cy.request({
     method: 'DELETE',
